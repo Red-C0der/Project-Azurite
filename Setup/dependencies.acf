@@ -1,0 +1,17 @@
+colorama
+mysql.connector
+pyprind
+progressbar
+time
+termcolor
+multiprocessing
+socket
+sys
+os
+getpass
+speech_recognition
+random
+psutil
+npyscreen
+colored
+unicurses

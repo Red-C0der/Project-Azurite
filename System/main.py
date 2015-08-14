@@ -71,7 +71,6 @@ class System:
                             value = value[1]
                             Logger.write("i", "Found identifier!")
                             return value
-                            break
             else:
                 Logger.write("i", "Opening "+sfile)
                 try:
@@ -90,7 +89,6 @@ class System:
                             value = value[1]
                             Logger.write("i", "Found identifier!")
                             return value
-                            break
         def setsetting(self, identifier, value, sfile=""):
             if sfile == "":
                 Logger.write("i", "Try opening settings.acf")
@@ -392,6 +390,135 @@ class System:
             return True
     class DataHandler:
         ErrorDict = {}
+        UsersDict = {"azurite": {"passwd": "017762", "rights": "full"}, "me": {"passwd": "", "rights": "normal"}}
+        curr_user = "azurite"
+        MachineName = "DevMachine"
+        version = 0
+        cpu_count = 0
+        cpu_count_logical = 0
+        memory_total_mb = 0
+        memory_total_gb = 0
+        curr_pid = 0
+        uname = ""
+        curr_dir = ""
+        def getsysinfo(self):
+            Logger.write("i", "Collecting System Information")
+            try:
+                self.version = Settings.getsetting("version")
+            except:
+                Logger.write("e", "Could not get System version!")
+                return False
+            try:
+                self.cpu_count = psutil.cpu_count(logical=False)
+            except:
+                Logger.write("e", "Could not get System cpu count!")
+                return False
+            try:
+                self.cpu_count_logical = psutil.cpu_count()
+            except:
+                Logger.write("e", "Could not get System cpu count (only physical)!")
+                return False
+            try:
+                self.tmp = psutil.virtual_memory()
+            except:
+                Logger.write("e", "Could not get System total virtual memory!")
+                return False
+            try:
+                self.tmp2 = str(self.tmp)
+                self.tmp2 = self.tmp2.strip("svmem('")
+                self.tmp = self.tmp2.split(", ")
+                self.tmp_total = self.tmp[0].strip("total=L")
+                Logger.write("e", "Could not get System version!")
+                self.memory_total_mb = self.tmp_total * 1024
+                self.memory_total_mb = self.memory_total_mb * 1024
+                self.memory_total_gb = self.memory_total_mb * 1024
+            except:
+                Logger.write("e", "Could not recalculate virtual memory!")
+                return False
+            try:
+                self.curr_pid = os.getpid()
+            except:
+                Logger.write("e", "Could not get current pid!")
+                return False
+            try:
+                self.uname = os.uname()
+            except:
+                Logger.write("e", "Could not get System uname!")
+                return False
+            try:
+                self.curr_dir = os.path.curdir()
+            except:
+                Logger.write("e", "Could not get current directory!")
+                return False
+            return True
+    class CMDHandler():
+        knowncommand = False
+        finishedcmd = False
+        def finished(self):
+            self.finishedcmd = True
+        def known(self):
+            self.knowncommand = True
+        def processcmd(self, cmd):
+            # Processing command: Extracting Arguments
+            cmd = cmd
+            string = cmd.split(" ")
+            args = []
+            for item in string:
+                if item != cmd:
+                    args.append(item)
+            # Checking if command is known by the system
+            # If command is listed here run self.known() before the other stuff
+            # If command has finished its stuff, run self.finished()
+            knowncommand = False
+            finishedcmd = False
+            if cmd is "exit":
+                sys.exit()
+            if cmd is "test":
+                self.known()
+                print "Test"
+                self.finished()
+
+            # Creating Return Dict
+            rdict = {}
+            if knowncommand is True:
+                rdict["kcmd"] = True
+            else:
+                rdict["kcmd"] = False
+            if finishedcmd is True:
+                rdict["state"] = True
+            else:
+                rdict["state"] = False
+            rdict["cmd"] = cmd
+            for item in args:
+                rdict[item] = args[item]
+            return rdict
+    class Console:
+        def start(self):
+            Logger.write("i", "Starting Console")
+            Output.CSPrint("sys", "Starting Console")
+            Logger.write("i", "Collecting System-information")
+            DataHandler.getsysinfo()
+            Logger.write("i", "Initialising Console main loop!")
+            self.loop()
+        def loop(self):
+            exit = False
+            while exit is False:
+                input = input("["+DataHandler.curr_user+"-"+DataHandler.MachineName+"] ~$ ")
+                Logger.write("i", "Recieved user input through console! ["+str(input)+"]")
+                Logger.write("i", "Handing input over to CommandProcessing")
+                rdict = CMDHandler(input)
+                if rdict["state"] is True:
+                    if rdict["kcmd"] is True:
+                        Logger.write("i", "CommandProcessing returned no error! Command was processed successful!")
+                    else:
+                        Logger.write("d", "Found error in CommandProcessing! CP processed cmd successful BUT cmd is not known by the system -> Statement IMPOSSIBLE!")
+                else:
+                    if rdict["kcmd"] is True:
+                        Logger.write("i", "CommandProcessing could not finish processing! But command is known by the system!")
+                        print(termcolor.colored(rdict["cmd"], "red") + termcolor.colored(": ","grey") + termcolor.colored("Command exists but could not be processed!", "blue"))
+                    else:
+                        Logger.write("i", "CommandProcessing could not finish processing and command is not known by the system!")
+                        print(termcolor.colored(rdict["cmd"], "red") + termcolor.colored(": ","grey") + termcolor.colored("Command does not exist!", "blue"))
 
 
 System = System()
@@ -399,7 +526,8 @@ Settings = System.Settings()
 Logger = System.Logger()
 DataHandler = System.DataHandler()
 ErrorHandler = System.ErrorHandler()
-
+Console = System.Console()
+CMDHandler = System.CMDHandler()
 
 class Input:
     pass
@@ -461,6 +589,8 @@ class Output:
             print("[" + termcolor.colored("SYSTEM", "blue", attrs=["bold"]) + "] " + termcolor.colored(message, "blue", attrs=["bold"]))
 
 Output = Output()
+CPrint = Output.CPrint()
+#CSPrint = Output.CSPrint()
 
 Logger.write("i", "|==========================================|")
 Logger.write("i", "|                                          |")
@@ -566,13 +696,6 @@ except:
     print "ERROR: Could not import getpass!"
 
 try:
-    import ConfigParser
-    Logger.write("i" ,"Imported ConfigParser")
-except:
-    Logger.write("e" ,"Could not import ConfigParser!")
-    print "ERROR: Could not import ConfigParser!"
-
-try:
     import speech_recognition as sr
     Logger.write("i" ,"Imported speech_recognition as sr")
 except:
@@ -585,6 +708,13 @@ try:
 except:
     Logger.write("e" ,"Could not import random!")
     print "ERROR: Could not import random!"
+
+try:
+    import psutil
+    Logger.write("i" ,"Imported psutil")
+except:
+    Logger.write("e" ,"Could not import psutil!")
+    print "ERROR: Could not import psutil!"
 
 try:
     import npyscreen
@@ -606,3 +736,5 @@ try:
 except:
     Logger.write("e" ,"Could not import * from unicurses!")
     print "ERROR: Could not import * from unicurses!"
+
+Console.start()
