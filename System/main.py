@@ -452,31 +452,24 @@ class System:
                 return False
             return True
     class CMDHandler():
-        knowncommand = False
-        finishedcmd = False
-        def finished(self):
-            self.finishedcmd = True
-        def known(self):
-            self.knowncommand = True
         def processcmd(self, cmd):
             # Processing command: Extracting Arguments
-            cmd = cmd
-            string = cmd.split(" ")
+            cstring = cmd.split(" ")
+            cmd = cstring[0]
             args = []
-            for item in string:
+            for item in cstring:
                 if item != cmd:
                     args.append(item)
             # Checking if command is known by the system
-            # If command is listed here run self.known() before the other stuff
-            # If command has finished its stuff, run self.finished()
+            # If command is listed here write "knowncommand = True" before the other stuff
+            # If command has finished its stuff, write "finishedcmd = True"
             knowncommand = False
             finishedcmd = False
-            if cmd is "exit":
-                sys.exit()
-            if cmd is "test":
-                self.known()
-                print "Test"
-                self.finished()
+            if cmd == "exit":
+                sys.exit(0)
+            if cmd == "test":
+                finishedcmd = True
+                knowncommand = True
 
             # Creating Return Dict
             rdict = {}
@@ -489,24 +482,25 @@ class System:
             else:
                 rdict["state"] = False
             rdict["cmd"] = cmd
+            i = 0
             for item in args:
-                rdict[item] = args[item]
+                rdict["arg"+str(i)] = args[0]
             return rdict
     class Console:
         def start(self):
             Logger.write("i", "Starting Console")
             Output.CSPrint("sys", "Starting Console")
-            Logger.write("i", "Collecting System-information")
-            DataHandler.getsysinfo()
+            #Logger.write("i", "Collecting System-information")
+            #DataHandler.getsysinfo()
             Logger.write("i", "Initialising Console main loop!")
             self.loop()
         def loop(self):
             exit = False
             while exit is False:
-                input = input("["+DataHandler.curr_user+"-"+DataHandler.MachineName+"] ~$ ")
+                input = raw_input("["+DataHandler.curr_user+"-"+DataHandler.MachineName+"] ~$ ")
                 Logger.write("i", "Recieved user input through console! ["+str(input)+"]")
                 Logger.write("i", "Handing input over to CommandProcessing")
-                rdict = CMDHandler(input)
+                rdict = CMDHandler.processcmd(input)
                 if rdict["state"] is True:
                     if rdict["kcmd"] is True:
                         Logger.write("i", "CommandProcessing returned no error! Command was processed successful!")
@@ -515,10 +509,10 @@ class System:
                 else:
                     if rdict["kcmd"] is True:
                         Logger.write("i", "CommandProcessing could not finish processing! But command is known by the system!")
-                        print(termcolor.colored(rdict["cmd"], "red") + termcolor.colored(": ","grey") + termcolor.colored("Command exists but could not be processed!", "blue"))
+                        print(termcolor.colored(rdict["cmd"], "red") + termcolor.colored(": ","yellow") + termcolor.colored("Command exists but could not be processed!", "blue"))
                     else:
                         Logger.write("i", "CommandProcessing could not finish processing and command is not known by the system!")
-                        print(termcolor.colored(rdict["cmd"], "red") + termcolor.colored(": ","grey") + termcolor.colored("Command does not exist!", "blue"))
+                        print(termcolor.colored(rdict["cmd"], "red") + termcolor.colored(": ","yellow") + termcolor.colored("Command does not exist!", "blue"))
 
 
 System = System()
