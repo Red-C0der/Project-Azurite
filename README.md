@@ -23,4 +23,6 @@
 # Project-Azurite
 A personal assistant and more!
 
+For more information about different versions, read the [changelog.md](https://github.com/Red-C0der/Project-Azurite/blob/master/changelog.md) file.
+
 Note: Finish Readme!
