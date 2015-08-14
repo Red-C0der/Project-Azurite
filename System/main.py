@@ -27,8 +27,15 @@ __author__ = 'Red_C0der'
 import logging
 class System:
     class Logger:
-        def write(self, level, message, logfile="latest.log"):
-            logging.basicConfig(filename=logfile, level=logging.DEBUG, format='%(asctime)s | %(levelname)s: %(message)s', datefmt='%d/%m/%Y %I:%M:%S')
+        def write(self, level, message, LogFile=""):
+            if LogFile == "":
+                from time import gmtime, strftime
+                LogName = strftime("%d-%m-%Y %H:%M", gmtime())
+                LogLoc = "../Logs/"
+                LogFile = LogLoc+LogName+".log"
+            else:
+                pass
+            logging.basicConfig(filename=LogFile, level=logging.DEBUG, format='%(asctime)s | %(levelname)s: %(message)s', datefmt='%d/%m/%Y %I:%M:%S')
             if level == "i":
                 logging.info(message)
             if level == "w":
@@ -50,8 +57,6 @@ Logger = System.Logger()
 
 class Input:
     pass
-
-
 
 
 class Output:
