@@ -1,10 +1,10 @@
 # Project-Azurite Changelog
 
-### Version: 0.0.1
+Version: 0.0.1
+======
 
-#### Changes in main.py
-~~Placeholders~~
-Removed placeholders
-
+* __Removed__ placeholders in main.py
+* __Added__ changelog.md
+* __Changed__ other files like .gitignore etc.
 
 
