@@ -12,3 +12,7 @@
 latest.log
 
 System/test.py
+
+*.log
+
+*.log

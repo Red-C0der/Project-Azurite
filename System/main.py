@@ -50,9 +50,355 @@ class System:
                 logging.debug(message)
             if level != "i" and level != "w" and level != "e" and level != "c" and level != "ex" and level != "d":
                 logging.exception("Logging level [" + level +  "] not recognized!")
+    class Settings:
+        def getsetting(self, identifier, sfile=""):
+            Logger.write("i", "Try getting setting: ["+str(identifier)+"]")
+            if sfile == "":
+                Logger.write("i", "Opening settings.acf File")
+                try:
+                    sfile = open("settings.acf", "r")
+                except:
+                    Logger.write("e", "Could not open settings.acf File")
+                    return False
+                Logger.write("i", "Scanning File for identifier: ["+str(identifier)+"]")
+                for line in sfile:
+                    bypass = False
+                    if "#" in line:
+                        bypass = True
+                    if bypass is False:
+                        value = line.split(": ")
+                        if value[0] == identifier:
+                            value = value[1]
+                            Logger.write("i", "Found identifier!")
+                            return value
+                            break
+            else:
+                Logger.write("i", "Opening "+sfile)
+                try:
+                    sfile = open(sfile, "r")
+                except:
+                    Logger.write("i", "Could not open "+sfile+" File")
+                    return False
+                Logger.write("i", "Scanning File for identifier: ["+str(identifier)+"]")
+                for line in sfile:
+                    bypass = False
+                    if "#" in line:
+                        bypass = True
+                    if bypass is False:
+                        value = line.split(": ")
+                        if value[0] == identifier:
+                            value = value[1]
+                            Logger.write("i", "Found identifier!")
+                            return value
+                            break
+        def setsetting(self, identifier, value, sfile=""):
+            if sfile == "":
+                Logger.write("i", "Try opening settings.acf")
+                try:
+                    sfileo = open("settings.acf", "r")
+                except:
+                    Logger.write("e", "Could not open settings.acf")
+                    return False
+                Logger.write("i", "Try reading settings.acf")
+                try:
+                    oldfiledata = sfileo.read()
+                except:
+                    Logger.write("e", "Could not read settings.acf")
+                    return False
+                if not identifier in oldfiledata:
+                    Logger.write("e", "Identifier ["+identifier+"] is not in settings.acf!")
+                    return False
+                else:
+                    ival = Settings.getsetting(identifier, sfile)
+                    line = identifier + ": " + ival
+                    Logger.write("d", "line = " + str(line))
+                    Logger.write("i", "Try replacing line in oldfiledata")
+                    try:
+                        newfiledata = oldfiledata.replace(line, identifier+": "+value)
+                    except:
+                        Logger.write("e", "Could not replace line in oldfiledata!")
+                        return False
+                    Logger.write("i", "Try overwriting settingsfile")
+                    try:
+                        Logger.write("i", "Try removing settings.acf")
+                        try:
+                            os.remove("settings.acf")
+                        except:
+                            Logger.write("e", "Could not remove settings.acf")
+                            return False
+                        try:
+                            nsfo = open("settings.acf", "w")
+                        except:
+                            Logger.write("e", "Could not create new settings.acf File!")
+                            return False
+                        try:
+                            nsfo.write(newfiledata)
+                        except:
+                            Logger.write("e", "Could not write newfiledata to settingsfile!")
+                            return False
+                        return True
+                    except:
+                        Logger.write("e", "Could not overwrite settingsfile")
+                        return False
+            else:
+                Logger.write("i", "Try opening "+sfile)
+                try:
+                    sfile = open(sfile, "r")
+                except:
+                    Logger.write("e", "Could not open "+sfile)
+                    return False
+                Logger.write("i", "Try reading settings.acf")
+                try:
+                    oldfiledata = sfile.reado()
+                except:
+                    Logger.write("e", "Could not read settings.acf")
+                    return False
+                if not identifier in oldfiledata:
+                    Logger.write("e", "Identifier ["+identifier+"] is not in settings.acf!")
+                    return False
+                else:
+                    ival = Settings.getsetting(identifier, sfile)
+                    line = identifier + ": " + ival
+                    Logger.write("d", "line = " + str(line))
+                    Logger.write("i", "Try replacing line in oldfiledata")
+                    try:
+                        newfiledata = oldfiledata.replace(line, identifier+": "+value)
+                    except:
+                        Logger.write("e", "Could not replace line in oldfiledata!")
+                        return False
+                    Logger.write("i", "Try overwriting settingsfile")
+                    try:
+                        Logger.write("i", "Try removing settings.acf")
+                        try:
+                            os.remove(sfile)
+                        except:
+                            Logger.write("e", "Could not remove settings.acf")
+                            return False
+                        try:
+                            nsfo = open(sfile, "w")
+                        except:
+                            Logger.write("e", "Could not create new " + sfile)
+                            return False
+                        try:
+                            nsfo.write(newfiledata)
+                        except:
+                            Logger.write("e", "Could not write newfiledata to settingsfile!")
+                            return False
+                        return True
+                    except:
+                        Logger.write("e", "Could not overwrite settingsfile")
+                        return False
+        def addsetting(self, identifier, value, sfile=""):
+            if sfile == "":
+                Logger.write("i", "Try opening settings.acf")
+                try:
+                    sfileo = open("settings.acf", "w")
+                except:
+                    Logger.write("e", "Could not open settings.acf")
+                    return False
+                Logger.write("i", "Try adding new section")
+                line = identifier + ": " + value + "\n"
+                try:
+                    sfileo.write(line)
+                except:
+                    Logger.write("e", "Could not create new section!")
+                    return False
+                return True
+            else:
+                Logger.write("i", "Try opening " + sfile)
+                try:
+                    sfileo = open(sfile, "w")
+                except:
+                    Logger.write("e", "Could not open " + sfile)
+                    return False
+                Logger.write("i", "Try adding new section")
+                line = identifier + ": " + value + "\n"
+                try:
+                    sfileo.write(line)
+                except:
+                    Logger.write("e", "Could not create new section!")
+                    return False
+                return True
+        def restoredefault(self, sfile="", tfile=""):
+            if sfile == "":
+                Logger.write("i", "Restoring default Settings file!")
+                Logger.write("i", "Try opening /Setup/DefaultSettings.acf")
+                try:
+                    sfileo = open("../Setup/DefaultSettings.acf", "r")
+                except:
+                    Logger.write("e", "Could not open /Setup/DefaultSettings.acf")
+                    return False
+                Logger.write("i", "Try reading DSettings.acf")
+                try:
+                    filedata = sfileo.read()
+                except:
+                    Logger.write("e", "Could not read DSettings.acf")
+                    return False
+                if tfile == "":
+                    Logger.write("i", "Try overwriting /System/settings.acf")
+                    try:
+                        Logger.write("i", "Try removing settings.acf")
+                        try:
+                            os.remove("settings.acf")
+                        except:
+                            Logger.write("e", "Could not remove settings.acf")
+                            return False
+                        try:
+                            nsfo = open("settings.acf", "w")
+                        except:
+                            Logger.write("e", "Could not create new settings.acf File!")
+                            return False
+                        try:
+                            nsfo.write(filedata)
+                        except:
+                            Logger.write("e", "Could not write filedata to settingsfile!")
+                            return False
+                        return True
+                    except:
+                        Logger.write("e", "Could not overwrite settingsfile")
+                        return False
+                else:
+                    Logger.write("i", "Try overwriting /System/settings.acf")
+                    try:
+                        Logger.write("i", "Try removing settings.acf")
+                        try:
+                            os.remove(tfile)
+                        except:
+                            Logger.write("e", "Could not remove settings.acf")
+                            return False
+                        try:
+                            nsfo = open(tfile, "w")
+                        except:
+                            Logger.write("e", "Could not create new settings.acf File!")
+                            return False
+                        try:
+                            nsfo.write(filedata)
+                        except:
+                            Logger.write("e", "Could not write filedata to settingsfile!")
+                            return False
+                        return True
+                    except:
+                        Logger.write("e", "Could not overwrite settingsfile")
+                        return False
+            else:
+                Logger.write("i", "Restoring default Settings file!")
+                Logger.write("i", "Try opening /Setup/DefaultSettings.acf")
+                try:
+                    sfileo = open(sfile, "r")
+                except:
+                    Logger.write("e", "Could not open /Setup/DefaultSettings.acf")
+                    return False
+                Logger.write("i", "Try reading DSettings.acf")
+                try:
+                    filedata = sfileo.read()
+                except:
+                    Logger.write("e", "Could not read DSettings.acf")
+                    return False
+                if tfile == "":
+                    Logger.write("i", "Try overwriting /System/settings.acf")
+                    try:
+                        Logger.write("i", "Try removing settings.acf")
+                        try:
+                            os.remove("settings.acf")
+                        except:
+                            Logger.write("e", "Could not remove settings.acf")
+                            return False
+                        try:
+                            nsfo = open("settings.acf", "w")
+                        except:
+                            Logger.write("e", "Could not create new settings.acf File!")
+                            return False
+                        try:
+                            nsfo.write(filedata)
+                        except:
+                            Logger.write("e", "Could not write filedata to settingsfile!")
+                            return False
+                    except:
+                        Logger.write("e", "Could not overwrite settingsfile")
+                        return False
+                else:
+                    Logger.write("i", "Try overwriting /System/settings.acf")
+                    try:
+                        Logger.write("i", "Try removing settings.acf")
+                        try:
+                            os.remove(tfile)
+                        except:
+                            Logger.write("e", "Could not remove settings.acf")
+                            return False
+                        try:
+                            nsfo = open(tfile, "w")
+                        except:
+                            Logger.write("e", "Could not create new settings.acf File!")
+                            return False
+                        try:
+                            nsfo.write(filedata)
+                        except:
+                            Logger.write("e", "Could not write filedata to settingsfile!")
+                            return False
+                    except:
+                        Logger.write("e", "Could not overwrite settingsfile")
+                        return False
+    class ErrorHandler:
+        def createdict(self, dictid):
+            Logger.write("i", "Try creating new ErrorDict ["+dictid+"]")
+            try:
+                DataHandler.ErrorDict[dictid] = {}
+            except:
+                Logger.write("e", "Could not create ErrorDict ["+dictid+"]")
+                return False
+            return True
+        def cleardict(self, dictid):
+            Logger.write("i", "Try clearing ErrorDict ["+dictid+"]")
+            try:
+                DataHandler.ErrorDict[dictid] = {}
+            except:
+                Logger.write("e", "Could not clear ErrorDict ["+dictid+"]")
+                return False
+            return True
+        def addentry(self, dictid, entryid, entry):
+            Logger.write("i", "Try adding entry to ErrorDict ["+dictid+" - "+entryid+" - "+entry+"]")
+            if dictid in DataHandler.ErrorDict:
+                dict = DataHandler.ErrorDict[dictid]
+                try:
+                    dict[entryid] = entry
+                except:
+                    Logger.write("e", "Could not add Error entry ["+dictid+" - "+entryid+" - "+entry+"]")
+                    return False
+                return True
+            else:
+                Logger.write("e", "Dictionary ["+dictid+"] is not in ErrorDict!")
+                return False
+        def clearentry(self, dictid, entryid):
+            Logger.write("i", "Try cleaning entry ["+entryid+"] in dict ["+dictid+"]")
+            try:
+                dict = DataHandler.ErrorDict[dictid]
+            except:
+                Logger.write("e", "Could not find dict ["+dictid+"] in ErrorDict!")
+                return False
+            try:
+                i = {}
+                dict[entryid] = None
+            except:
+                Logger.write("e", "Could clear entry ["+entryid+"]")
+                return False
+            return True
+        def resetall(self):
+            Logger.write("i", "Try resetting ErrorsDict")
+            try:
+                DataHandler.ErrorDict = {}
+            except:
+                Logger.write("e", "Could not reset ErrorDict!")
+                return False
+            return True
+    class DataHandler:
+        ErrorDict = {}
+
 
 System = System()
+Settings = System.Settings()
 Logger = System.Logger()
+DataHandler = System.DataHandler()
+ErrorHandler = System.ErrorHandler()
 
 
 class Input:
@@ -60,7 +406,7 @@ class Input:
 
 
 class Output:
-    def Cout(text, fgc=500, bgc=500, attrc="", newline=True):
+    def CPrint(text, fgc=500, bgc=500, attrc="", newline=True):
         if newline is True:
             if fgc != 500:
                 if bgc == 500:
@@ -97,6 +443,22 @@ class Output:
                         sys.stdout.write(bg(bgc) + text + style.RESET)
                     else:
                         sys.stdout.write(bg(bgc) + attr(attrc) + text + style.RESET)
+    def CSPrint(self, state, message):
+        if state == "":
+            print("[....] " + message)
+        if state == "ok":
+            print("[ " + termcolor.colored("OK", "green", attrs=["bold"]) + " ] " + termcolor.colored(message, "green", attrs=["bold"]))
+        if state == "error":
+            print("[" + termcolor.colored("ERROR", "red", attrs=["blink", "bold"]) + "] " + termcolor.colored(message, "red", attrs=["bold"]))
+        if state == "warning":
+            # 208
+            print("[" + fg(241) + attr("bold") + attr("blink") + "WARNING" + style.RESET + "] " + fg(241) + attr("bold") + message + style.RESET)
+        if state == "info":
+            print("[" + termcolor.colored("INFO", "cyan", attrs=["bold"]) + "] " + termcolor.colored(message, "cyan", attrs=["bold"]))
+        if state == "debug":
+            print("[" + termcolor.colored("DEBUG", "magenta", attrs=["bold"]) + "] " + termcolor.colored(message, "magenta", attrs=["bold"]))
+        if state == "sys":
+            print("[" + termcolor.colored("SYSTEM", "blue", attrs=["bold"]) + "] " + termcolor.colored(message, "blue", attrs=["bold"]))
 
 Output = Output()
 
