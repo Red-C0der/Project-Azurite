@@ -9,7 +9,7 @@ __author__ = 'Red_C0der'
 #  |   ██║  ██║███████╗██████╔╝███████╗╚██████╗╚██████╔╝██████╔╝███████╗██║  ██║   |
 #  |                                                                               |
 #  |   Name: Project-Azurite                                                       |
-#  |   Version: 0.0.1                                                              |
+#  |   Version: 0.0.2                                                              |
 #  |   Development-State: Alpha                                                    |
 #  |   Project-ID: 0776                                                            |
 #  |   GitHub-Page: http://red-c0der.github.io/Project-Azurite                     |

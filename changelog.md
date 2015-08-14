@@ -1,6 +1,6 @@
 # Project-Azurite Changelog
 
-### Version: 0.0.1
+## Version: 0.0.1
 
 ###### Description:
 
@@ -29,3 +29,29 @@ to perform several tasks.
 
 * __Changed__ how the logging system works
 * __Changed__ other minor files like .gitignore etc.
+
+
+## Version: 0.0.2
+
+###### Description:
+
+Lore Ipsum
+
+====================================
+
+* __Created__
+* __Created__
+
+====================================
+
+* __Added__
+* __Added__
+
+====================================
+
+* __Removed__
+
+====================================
+
+* __Changed__
+* __Changed__
