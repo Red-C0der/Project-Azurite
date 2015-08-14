@@ -1,0 +1,25 @@
+14/08/2015 06:26:47 | INFO: |==========================================|
+14/08/2015 06:26:47 | INFO: |                                          |
+14/08/2015 06:26:47 | INFO: |               New Execution              |
+14/08/2015 06:26:47 | INFO: |                                          |
+14/08/2015 06:26:47 | INFO: |==========================================|
+14/08/2015 06:26:47 | INFO: Imported colorama
+14/08/2015 06:26:48 | INFO: Imported mysql.connector
+14/08/2015 06:26:48 | INFO: Imported pyprind
+14/08/2015 06:26:48 | INFO: Imported progressbar
+14/08/2015 06:26:48 | INFO: Imported time
+14/08/2015 06:26:48 | INFO: Imported termcolor
+14/08/2015 06:26:48 | INFO: Imported multiprocessing
+14/08/2015 06:26:48 | INFO: Imported Queue from multiprocessing
+14/08/2015 06:26:48 | INFO: Imported Manager from multiprocessing
+14/08/2015 06:26:48 | INFO: Imported Value from multiprocessing
+14/08/2015 06:26:48 | INFO: Imported socket
+14/08/2015 06:26:48 | INFO: Imported sys
+14/08/2015 06:26:48 | INFO: Imported os
+14/08/2015 06:26:48 | INFO: Imported getpass
+14/08/2015 06:26:48 | INFO: Imported ConfigParser
+14/08/2015 06:26:49 | INFO: Imported speech_recognition as sr
+14/08/2015 06:26:49 | INFO: Imported random
+14/08/2015 06:26:49 | INFO: Imported npyscreen
+14/08/2015 06:26:50 | INFO: Imported fg, bg, attr, style from colored
+14/08/2015 06:26:50 | INFO: Imported * from unicurses
