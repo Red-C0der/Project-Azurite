@@ -21,7 +21,13 @@
 ```
 
 # Project-Azurite
-A personal assistant and more!
+### What is it?
+Basicly Project-Azurite is a personal assistant.
+
+It can automate most of your computer stuff.
+
+
+More information here: [Click HERE](http://red-c0der.github.io/Project-Azurite)
 
 For more information about different versions, read the [changelog.md](https://github.com/Red-C0der/Project-Azurite/blob/master/changelog.md) file.
 
